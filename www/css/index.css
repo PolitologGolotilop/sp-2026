@@ -1,0 +1,307 @@
+* {
+  box-sizing: border-box;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+}
+body {
+  background: #f5f3f0;
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+.card {
+  max-width: 800px;
+  width: 100%;
+  background: white;
+  border-radius: 28px;
+  box-shadow: 0 20px 40px -10px rgba(0,0,0,0.15), 0 8px 20px rgba(0,0,0,0.05);
+  padding: 2rem 2rem 2.5rem;
+}
+h1 {
+  font-weight: 500;
+  font-size: 2rem;
+  margin: 0 0 0.25rem 0;
+  color: #2e241e;
+  letter-spacing: -0.01em;
+}
+.subhead {
+  color: #6b5f55;
+  margin-bottom: 2rem;
+  border-left: 4px solid #b89b7b;
+  padding-left: 1rem;
+  font-weight: 350;
+}
+.product-list {
+  background: #fefcf9;
+  border-radius: 20px;
+  padding: 0.5rem;
+  border: 1px solid #e7ddd2;
+}
+.product-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.9rem 1.2rem;
+  border-bottom: 1px solid #eee7df;
+  transition: background 0.15s;
+  cursor: default;
+}
+.product-item:last-child {
+  border-bottom: none;
+}
+.product-item:hover {
+  background: #f9f3ec;
+  border-radius: 14px;
+}
+.product-name {
+  font-size: 1.2rem;
+  font-weight: 450;
+  color: #3f332b;
+}
+.eye-icon {
+  background: none;
+  border: none;
+  font-size: 1.6rem;
+  line-height: 1;
+  cursor: pointer;
+  color: #8b6f55;
+  padding: 0.3rem 0.8rem;
+  border-radius: 40px;
+  transition: all 0.15s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.eye-icon:hover {
+  background: #e5d5c5;
+  color: #4a3729;
+  transform: scale(1.05);
+}
+.add-product-btn {
+  margin-top: 2rem;
+  background: #ffffff;
+  border: 2px dashed #c9b6a2;
+  border-radius: 60px;
+  padding: 0.9rem 1.8rem;
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #5f4d3b;
+  cursor: pointer;
+  width: 100%;
+  transition: all 0.2s;
+}
+.add-product-btn:hover {
+  background: #f2ebe2;
+  border-color: #a6896e;
+  color: #3f2f21;
+}
+
+/* modal overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(35, 28, 23, 0.5);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s;
+  z-index: 1000;
+  padding: 1rem;
+}
+.modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+.modal-window {
+  background: #ffffffec;
+  backdrop-filter: blur(4px);
+  max-width: 480px;
+  width: 100%;
+  border-radius: 40px;
+  box-shadow: 0 30px 60px rgba(27, 21, 16, 0.35);
+  padding: 2.2rem 2rem 1.8rem;
+  transform: scale(0.98);
+  transition: transform 0.2s ease-out;
+  border: 1px solid rgba(255, 245, 235, 0.5);
+}
+.modal-overlay.active .modal-window {
+  transform: scale(1);
+}
+.modal-window h2 {
+  margin: 0 0 1.2rem 0;
+  font-weight: 450;
+  font-size: 1.9rem;
+  color: #2e241e;
+}
+.field-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #4d3f35;
+  letter-spacing: 0.3px;
+  font-size: 0.95rem;
+}
+.input-product {
+  width: 100%;
+  padding: 0.9rem 1.2rem;
+  font-size: 1.1rem;
+  background: #fcf8f2;
+  border: 1.5px solid #e2d5c8;
+  border-radius: 30px;
+  margin-bottom: 1.8rem;
+  transition: 0.2s;
+  outline: none;
+}
+.input-product:focus {
+  border-color: #b39274;
+  background: white;
+  box-shadow: 0 0 0 3px #edd9c9;
+}
+.workshops-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 0.8rem;
+}
+.workshops-header span {
+  font-weight: 600;
+  color: #4f4137;
+  font-size: 1.1rem;
+}
+.btn-add-workshop {
+  background: #e7d9cc;
+  border: none;
+  padding: 0.5rem 1.2rem;
+  border-radius: 40px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #4b3727;
+  cursor: pointer;
+  transition: 0.15s;
+  border: 1px solid #cfbeac;
+}
+.btn-add-workshop:hover {
+  background: #d8c4b2;
+  color: #2b1f16;
+}
+.workshop-tag-list {
+  background: #f4ede6;
+  border-radius: 28px;
+  padding: 1.2rem 1.2rem;
+  min-height: 4.5rem;
+  margin-bottom: 2rem;
+  border: 1px solid #dccfc2;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: center;
+}
+.workshop-tag {
+  background: white;
+  border-radius: 50px;
+  padding: 0.5rem 1.2rem;
+  font-size: 1rem;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.03);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  border: 1px solid #d5c0ad;
+  color: #3d2e23;
+}
+.remove-workshop {
+  background: none;
+  border: none;
+  font-size: 1.3rem;
+  line-height: 1;
+  cursor: pointer;
+  color: #a7795b;
+  padding: 0 0.2rem;
+  transition: 0.1s;
+}
+.remove-workshop:hover {
+  color: #b13e1f;
+  transform: scale(1.2);
+}
+.placeholder-text {
+  color: #9b8b7c;
+  font-style: italic;
+  padding: 0.4rem 0 0.4rem 0.8rem;
+}
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1.2rem;
+}
+.btn-primary {
+  background: #9f7e62;
+  border: none;
+  padding: 0.9rem 2.6rem;
+  border-radius: 50px;
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: white;
+  box-shadow: 0 6px 12px rgba(130, 90, 60, 0.25);
+  cursor: pointer;
+  transition: 0.2s;
+  border: 1px solid #a9876b;
+}
+.btn-primary:hover {
+  background: #876a50;
+  box-shadow: 0 10px 18px rgba(100, 70, 40, 0.25);
+  transform: scale(1.02);
+}
+
+/* второе модальное окно (добавление цеха) */
+.small-modal .modal-window {
+  max-width: 360px;
+  padding: 1.8rem;
+}
+.workshop-select {
+  width: 100%;
+  padding: 1rem;
+  font-size: 1.1rem;
+  border-radius: 40px;
+  border: 1.5px solid #d2c0af;
+  background: #fcf7f1;
+  margin: 1.2rem 0 2rem 0;
+  cursor: pointer;
+}
+.inline-buttons {
+  display: flex;
+  gap: 0.8rem;
+  justify-content: flex-end;
+}
+.btn-cancel {
+  background: transparent;
+  border: 1px solid #bbaa9b;
+  padding: 0.7rem 1.8rem;
+  border-radius: 40px;
+  font-size: 1rem;
+  color: #5c4d40;
+  font-weight: 500;
+  cursor: pointer;
+}
+.btn-cancel:hover {
+  background: #e7ddd2;
+}
+.btn-add {
+  background: #9f7e62;
+  border: none;
+  padding: 0.7rem 2rem;
+  border-radius: 40px;
+  font-size: 1rem;
+  font-weight: 500;
+  color: white;
+  cursor: pointer;
+}
+.btn-add:hover {
+  background: #7d6048;
+}

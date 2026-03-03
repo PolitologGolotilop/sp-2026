@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мебельная компания · Управление продукцией</title>
+    <link rel="stylesheet" href="/www/css/index.css">
+    <link rel="stylesheet" href="/www/css/material-icons.css">
+    <script src="/www/js/index.js"></script>
+</head>
+<body>
+
+<!-- список всех продуктов -->
+<div class="card">
+    <h1>🪑 Мебельная коллекция</h1>
+    <div class="subhead">продукция из натуральных материалов</div>
+    <div id="productListContainer" class="product-list">
+    </div>
+    <button class="add-product-btn" id="openAddProductModal">+ добавить новую модель</button>
+</div>
+
+<!-- модальное окно для просмотра информации о продукте -->
+<div class="modal-overlay" id="productModal">
+    <div class="modal-window">
+        <h2 id="modalTitle">Продукт</h2>
+        <label class="field-label">Наименование модели</label>
+        <input type="text" class="input-product" id="productNameInput" placeholder="например, Скандинавский стол">
+        <div class="workshops-header">
+            <span>Цеха производства</span>
+            <button class="btn-add-workshop" id="openAddWorkshopBtn">+ добавить цех</button>
+        </div>
+        <div id="workshopTagsContainer" class="workshop-tag-list">
+        </div>
+
+        <div class="modal-actions">
+            <button class="btn-primary" id="saveProductBtn">OK</button>
+        </div>
+    </div>
+</div>
+
+<!-- модальное окно для добавления цехов -->
+<div class="modal-overlay" id="addWorkshopModal">
+    <div class="modal-window small-modal">
+        <h2 style="font-size: 1.7rem; margin-bottom: 0.5rem;">➕ добавить цех</h2>
+        <label class="field-label">Выберите из списка</label>
+        <select id="workshopSelect" class="workshop-select">
+        </select>
+        <div class="inline-buttons">
+            <button class="btn-cancel" id="cancelWorkshopBtn">отмена</button>
+            <button class="btn-add" id="addWorkshopConfirmBtn">добавить</button>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+
+<script>
+    initProductList()
+</script>
