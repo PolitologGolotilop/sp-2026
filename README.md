@@ -2,7 +2,8 @@
 
 ---
 
-<img width="1917" height="948" alt="image" src="https://github.com/user-attachments/assets/03eff241-02a0-42d0-9024-ed515b4af857" />
+<img width="1914" height="943" alt="image" src="https://github.com/user-attachments/assets/f2a90959-9196-4420-9867-a0f8455d9bc0" />
+
 
 Главная страница приложения
 
