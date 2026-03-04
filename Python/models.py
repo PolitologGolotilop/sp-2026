@@ -2,23 +2,29 @@ from dataclasses import dataclass
 import logging
 from typing import List, TypedDict
 from tortoise.models import Model
-from tortoise.fields import CharField, IntField, ForeignKeyField
+from tortoise.fields import CharField, IntField, ForeignKeyField, ReverseRelation, ManyToManyField
 
 class Product(Model):
     id = IntField(primary_key = True)
     name = CharField(max_length = 255, null=False)
+    workshops = ManyToManyField(
+        to = 'models.Workshop',
+        related_name="products",
+        through="workshopsAndProducts",
+        forward_key="ws_id",
+        backward_key="product_id"
+    )
 
     class Meta: # type: ignore
         table = "products"
 
     async def to_data(self)->'ProductData':
-        self_links = await WorkshopAndProduct.filter(product=self.id)
-        self_ws_ids = [link.id for link in self_links]
-
-        workshops = await Workshop.all()
-        self_workshops:List[WorkshopData] = [ws.to_data() for ws in workshops if ws.id in self_ws_ids]
-
-        return ProductData(id = self.id, name = self.name, workshops = self_workshops)
+        logging.info(F"{self.id} - {await self.workshops.all()}")
+        return ProductData(id = self.id, name = self.name, workshops = [ws.to_data() for ws in await self.workshops.all()])
+    
+    @classmethod
+    def from_data(cls, data:'ProductData')->'Product':
+        return cls(id=data['id'], name = data['name'])
 
 class Workshop(Model):
     id = IntField(primary_key = True)
@@ -30,14 +36,6 @@ class Workshop(Model):
     
     def to_data(self)->'WorkshopData':
         return WorkshopData(name=self.name, id=self.id, address=self.address)
-
-class WorkshopAndProduct(Model):
-    id = IntField(primary_key = True)
-    product = ForeignKeyField(Product, related_name="Product.id")
-    ws = ForeignKeyField(Workshop, related_name="Workshop.id")
-
-    class Meta: # type: ignore
-        table = "workshopsAndProducts"
 
 @dataclass
 class ProductData(TypedDict):

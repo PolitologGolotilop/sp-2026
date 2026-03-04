@@ -2,26 +2,62 @@ let ProductListInstance = null
 let ProductModalInstance = null
 let WorkshopModalInstance = null
 
+async function fetch_with_body(route, method, dict){
+    const response = await fetch(route, 
+        {
+        method: method,
+        headers: {
+        'Content-Type': 'application/json',
+        },
+        body:JSON.stringify(dict)
+    })
+
+    return response
+}
+
+async function parse_data(response) {
+    const data = await response.json()
+
+    return JSON.parse(data)
+}
+
+function log_route_error(route, method) {
+    console.error(`Не удалось обратится к ${route}. Метод ${method}`)
+}
+
 async function get(route){
+    const method = "GET"
     const response = await fetch(route, {
-            method:"GET"
+        method:method
     })
 
     if(response.ok){
-        let data = await response.json()
-
-        console.log(typeof data)
-
-        return JSON.parse(data)
+        return await parse_data(response)
     }
 
-    console.error(`Не удалось обратится к ${route}`)
+    log_route_error(route, method)
+}
+
+async function send_to_server(route, dict, method = "POST"){
+    const response = await fetch_with_body(route, method, dict)
+
+    if(response.ok){
+        return await parse_data(response)
+    }
+
+    log_route_error(route, method)
 }
 
 class ProductList{
     constructor(containerId){
         this.initialized = false
         this.container = document.getElementById(containerId);
+        this.addBtn = document.getElementById("openAddProductModal")
+
+        this.addBtn.onclick = () => {
+            ProductModalInstance.init(null)
+            ProductModalInstance.open()
+        }
     }
 
     async init(){
@@ -37,7 +73,7 @@ class ProductList{
 
         this.container.innerHTML = ""
 
-        this.products.forEach(product=>{
+        this.products.sort((a,b) => a.id-b.id).forEach(product => {
             const itemDiv = document.createElement('div');
             itemDiv.className = 'product-item';
 
@@ -54,11 +90,23 @@ class ProductList{
                 e.stopPropagation();
                 const id = viewBtn.getAttribute('productId');
                 const product = this.products.find(p => p.id == id);
-                console.log(ProductModalInstance)
                 if (product){
                     ProductModalInstance.init(product)
                     ProductModalInstance.open();
                 }
+            }
+
+            const deleteBtn = document.createElement("span")
+            deleteBtn.className = "material-symbols-outlined"
+            deleteBtn.textContent = "delete"
+            deleteBtn.setAttribute("productId", product.id)
+
+            deleteBtn.onclick = async (e) => {
+                e.stopPropagation();
+                const id = viewBtn.getAttribute('productId');
+                const product = this.products.find(p => p.id == id);
+
+                await delete_("/products", {"product":product})
             }
 
             itemDiv.appendChild(productName)
@@ -84,18 +132,24 @@ class ProductModal{
     }
 
     init(product){
-        this.product = product
-        this.changed = false
-        this.workshops = product.workshops.slice()
+        console.log(product)
+        this.newProduct = product==null
 
-        this.saveBtn.onclick = () => {this.claimChanges()}
-        this.nameInput.oninput = () => {this.checkChanges(this.product)}
+        this.product = product
+        this.changed = this.newProduct
+
+        this.workshops = this.newProduct? [] : product.workshops.slice()
+        this.nameInput.oninput = this.newProduct? null : () => {this.checkChanges(this.product)}
+        this.nameInput.value = this.newProduct? "" : product.name
+
+        this.saveBtn.onclick = async () => {await this.claimChanges()}
+
         this.overlay.onclick = (e) => {
             if(e.target==this.overlay){
                 this.close()
             }
         }
-        this.nameInput.value = product.name
+
         this.addWorkshopBtn.onclick = async () => {
             await WorkshopModalInstance.init(this.workshops)
             WorkshopModalInstance.open()
@@ -107,7 +161,8 @@ class ProductModal{
     }
 
     renderWorkshops(){
-        this.checkChanges()
+        if(!this.newProduct) this.checkChanges()
+
         this.workshopsContainer.innerHTML = '';
         if (!this.workshops || this.workshops.length === 0) {
             this.workshopsContainer.innerHTML = '<span class="placeholder-text">нет привязанных цехов</span>';
@@ -168,12 +223,26 @@ class ProductModal{
         }
     }
 
-    claimChanges(){
+    async claimChanges(){
         if(this.changed){
-            alert("Здесь логика отправки на сервак")
+            const prod_name = this.nameInput.value.trim()
+            const workshops = this.workshops? this.workshops.map(s=>s.id) : []
+            const dict = {"name":prod_name, "workshops_ids":workshops}
+
+            if(this.newProduct){
+                await send_to_server("/products", dict)
+            }
+            else{
+                await send_to_server("/products", {"id":this.product.id, product: dict}, "PATCH")
+            }
+            
+            this.changed = false
+            await ProductListInstance.init()
+            ProductListInstance.render()
+            this.close()
         }
         else{
-            this.hide()
+            this.close()
         }
     }
 
