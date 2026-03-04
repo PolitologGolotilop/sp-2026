@@ -10,8 +10,10 @@ from tortoise import transactions
 import uvicorn
 import logging
 import sys
-from models import Product, ProductData, Workshop, WorkshopData
 from threading import Thread
+
+from models import Product, Workshop, WS2P
+from models_data import ProductData
 
 
 if sys.stdout.encoding != 'utf-8':
@@ -48,14 +50,18 @@ async def index(request:Request)->HTMLResponse:
 
 @app.get(PRODUCTS_API_PATH, response_class=JSONResponse)
 async def get_products(request:Request)->JSONResponse:
-    db_products = await Product.all()
-    data_list:List[ProductData] = []
+    try:
+        db_products = await Product.all()
+        data_list:List[ProductData] = []
 
-    for product in db_products:
-        data = await product.to_data()
-        data_list.append(data)
+        for product in db_products:
+            data = await product.to_data()
+            data_list.append(data)
 
-    return JSONResponse(json.dumps(data_list))
+        return JSONResponse(json.dumps(data_list))
+    except Exception as e:
+        logging.info(f"⛔Ошибка при получении списка продукции - {e}")
+        return JSONResponse(status_code=500, content={"info":e})
 
 @app.delete(f"{PRODUCTS_API_PATH}/{{id}}", response_class=JSONResponse)
 async def delete_product(request:Request, id:int)->JSONResponse:
@@ -72,7 +78,8 @@ async def add_product(request:Request, name:str = Body(...), workshops_ids:List[
     workshops = await Workshop.filter(id__in=workshops_ids)
 
     for ws in workshops:
-        await product.workshops.add(ws)
+        # await product.workshops.add(ws)
+        await WS2P.create(product = product, ws = ws)
     
     return JSONResponse(json.dumps(await product.to_data()))
 
@@ -80,12 +87,14 @@ async def add_product(request:Request, name:str = Body(...), workshops_ids:List[
 async def update_product_transaction(id:int, name:str, workshop_ids:List[int])->str:
     updated = await Product.get(id=await Product.filter(id=id).update(name=name))
 
-    await updated.workshops.clear()
+    # await updated.workshops.clear()
+    await WS2P.all().delete()
 
     workshops = await Workshop.filter(id__in=workshop_ids)
     
     for ws in workshops:
-        await updated.workshops.add(ws)
+        # await updated.workshops.add(ws)
+        await WS2P.create(product = updated, ws = ws)
 
     return json.dumps(await updated.to_data())
 

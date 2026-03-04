@@ -72,15 +72,39 @@ class ProductList{
             return
         }
 
+        function div_text_icon(text, iconName){
+            const div = document.createElement("div")
+            div.style = "display: flex; gap: 10px; padding-top:10px"
+
+            const textContent = document.createElement("span")
+            textContent.innerText = text
+
+            const icon = document.createElement("span")
+            icon.className = "material-symbols-outlined"
+            icon.textContent = iconName
+
+            div.append(textContent)
+            div.append(icon)
+
+            return div
+        }
+
         this.container.innerHTML = ""
 
         this.products.sort((a,b) => a.id-b.id).forEach(product => {
             const itemDiv = document.createElement('div');
             itemDiv.className = 'product-item';
 
+            const dataDiv = document.createElement("div")
+
             const productName = document.createElement("span")
             productName.className = "product-name"
-            productName.innerText = product.name
+            productName.innerText = `${product.production_type.type} | ${product.name}`
+
+            dataDiv.appendChild(productName)
+            dataDiv.appendChild(div_text_icon(product.article, "art_track"))
+            dataDiv.appendChild(div_text_icon(product.min_price, "attach_money"))
+            dataDiv.appendChild(div_text_icon(product.material_type.type, "tonality"))
 
             const btnsDiv = document.createElement("div")
             btnsDiv.style = "display:flex;gap:20px"
@@ -123,9 +147,10 @@ class ProductList{
                 }
             }
 
-            itemDiv.appendChild(productName)
             btnsDiv.appendChild(viewBtn)
             btnsDiv.append(deleteBtn)
+
+            itemDiv.appendChild(dataDiv)
             itemDiv.appendChild(btnsDiv)
 
             this.container.appendChild(itemDiv);
