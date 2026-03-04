@@ -57,9 +57,11 @@ async def get_products(request:Request)->JSONResponse:
 
     return JSONResponse(json.dumps(data_list))
 
-@app.delete(PRODUCTS_API_PATH, response_class=JSONResponse)
-async def delete_product(request:Request, product:str = Body(...))->JSONResponse:
-    await Product.from_data(json.loads(product)).delete()
+@app.delete(f"{PRODUCTS_API_PATH}/{{id}}", response_class=JSONResponse)
+async def delete_product(request:Request, id:int)->JSONResponse:
+    logging.info(id)
+    product = await Product.get(id=id)
+    await product.delete()
 
     return JSONResponse({"status":"ok"})
 
@@ -67,9 +69,9 @@ async def delete_product(request:Request, product:str = Body(...))->JSONResponse
 async def add_product(request:Request, name:str = Body(...), workshops_ids:List[int] = Body(...))->JSONResponse:
     product = await Product.create(name = name)
 
-    workshops = await Workshop.filter(id__in=await product.workshops.all())
+    workshops = await Workshop.filter(id__in=workshops_ids)
 
-    for ws in workshops_ids:
+    for ws in workshops:
         await product.workshops.add(ws)
     
     return JSONResponse(json.dumps(await product.to_data()))

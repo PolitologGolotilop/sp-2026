@@ -39,6 +39,7 @@ async function get(route){
 }
 
 async function send_to_server(route, dict, method = "POST"){
+    console.log(dict)
     const response = await fetch_with_body(route, method, dict)
 
     if(response.ok){
@@ -81,6 +82,9 @@ class ProductList{
             productName.className = "product-name"
             productName.innerText = product.name
 
+            const btnsDiv = document.createElement("div")
+            btnsDiv.style = "display:flex;gap:20px"
+
             const viewBtn = document.createElement("span")
             viewBtn.className = "material-symbols-outlined"
             viewBtn.textContent = "remove_red_eye"
@@ -100,17 +104,29 @@ class ProductList{
             deleteBtn.className = "material-symbols-outlined"
             deleteBtn.textContent = "delete"
             deleteBtn.setAttribute("productId", product.id)
+            deleteBtn.style.color = "#f19d9d"
 
             deleteBtn.onclick = async (e) => {
                 e.stopPropagation();
-                const id = viewBtn.getAttribute('productId');
-                const product = this.products.find(p => p.id == id);
-
-                await delete_("/products", {"product":product})
+                const id = parseInt(deleteBtn.getAttribute('productId'));
+                
+                const response = await fetch(`/products/${id}`, {
+                    method: "DELETE",
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                if(response.ok){
+                    await ProductListInstance.init();
+                    ProductListInstance.render();
+                }
             }
 
             itemDiv.appendChild(productName)
-            itemDiv.appendChild(viewBtn)
+            btnsDiv.appendChild(viewBtn)
+            btnsDiv.append(deleteBtn)
+            itemDiv.appendChild(btnsDiv)
 
             this.container.appendChild(itemDiv);
         })
@@ -143,6 +159,7 @@ class ProductModal{
         this.nameInput.value = this.newProduct? "" : product.name
 
         this.saveBtn.onclick = async () => {await this.claimChanges()}
+        this.saveBtn.innerText = this.newProduct? 'Сохранить' : "Ок"
 
         this.overlay.onclick = (e) => {
             if(e.target==this.overlay){

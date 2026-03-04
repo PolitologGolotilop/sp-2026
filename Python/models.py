@@ -19,7 +19,6 @@ class Product(Model):
         table = "products"
 
     async def to_data(self)->'ProductData':
-        logging.info(F"{self.id} - {await self.workshops.all()}")
         return ProductData(id = self.id, name = self.name, workshops = [ws.to_data() for ws in await self.workshops.all()])
     
     @classmethod
