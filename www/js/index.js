@@ -150,8 +150,20 @@ class ProductList{
             btnsDiv.appendChild(viewBtn)
             btnsDiv.append(deleteBtn)
 
+            const left = document.createElement("div")
+            left.id = "left"
+            left.style = "display:flex; flex-direction:column; justify-content:space-between;height: -webkit-fill-available;"
+
+            const time = document.createElement("span")
+            time.innerText = `${product.production_time} ч.`
+            time.style.fontSize = "25px"
+            time.style.textAlign = "center"
+
+            left.appendChild(time)
+            left.appendChild(btnsDiv)
+
             itemDiv.appendChild(dataDiv)
-            itemDiv.appendChild(btnsDiv)
+            itemDiv.appendChild(left)
 
             this.container.appendChild(itemDiv);
         })

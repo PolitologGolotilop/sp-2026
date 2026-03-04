@@ -1,20 +1,18 @@
 * {
   box-sizing: border-box;
-  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+  font-family: 'Candara', 'Calibri', 'Gill Sans', 'Gill Sans MT', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
 }
 body {
-  background: #f5f3f0;
+  background: #ffffff;
   margin: 0;
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1.5rem;
 }
 .card {
   max-width: 800px;
-  width: 100%;
-  background: white;
+  background: #D2DFFF; /* Основной фон */
   border-radius: 28px;
   box-shadow: 0 20px 40px -10px rgba(0,0,0,0.15), 0 8px 20px rgba(0,0,0,0.05);
   padding: 2rem 2rem 2.5rem;
@@ -26,6 +24,11 @@ h1 {
   color: #2e241e;
   letter-spacing: -0.01em;
 }
+.head{
+  display: flex;
+  align-items: center;
+  gap:20px
+}
 .subhead {
   color: #6b5f55;
   margin-bottom: 2rem;
@@ -34,10 +37,12 @@ h1 {
   font-weight: 350;
 }
 .product-list {
-  background: #fefcf9;
+  background: #FFFFFF; /* Основной фон */
   border-radius: 20px;
   padding: 0.5rem;
   border: 1px solid #e7ddd2;
+  overflow-y: scroll;
+  max-height: 661px;
 }
 .product-item {
   display: flex;
@@ -52,7 +57,7 @@ h1 {
   border-bottom: none;
 }
 .product-item:hover {
-  background: #f9f3ec;
+  background: #D2DFFF; /* Дополнительный фон */
   border-radius: 14px;
 }
 .product-name {
@@ -66,7 +71,7 @@ h1 {
   font-size: 1.6rem;
   line-height: 1;
   cursor: pointer;
-  color: #8b6f55;
+  color: #355CBD; /* Акцентный цвет для иконки */
   padding: 0.3rem 0.8rem;
   border-radius: 40px;
   transition: all 0.15s;
@@ -75,13 +80,13 @@ h1 {
   justify-content: center;
 }
 .eye-icon:hover {
-  background: #e5d5c5;
-  color: #4a3729;
+  background: #D2DFFF; /* Дополнительный фон */
+  color: #1f3a7a;
   transform: scale(1.05);
 }
 .add-product-btn {
   margin-top: 2rem;
-  background: #ffffff;
+  background: #FFFFFF; /* Основной фон */
   border: 2px dashed #c9b6a2;
   border-radius: 60px;
   padding: 0.9rem 1.8rem;
@@ -93,9 +98,9 @@ h1 {
   transition: all 0.2s;
 }
 .add-product-btn:hover {
-  background: #f2ebe2;
-  border-color: #a6896e;
-  color: #3f2f21;
+  background: #D2DFFF; /* Дополнительный фон */
+  border-color: #355CBD;
+  color: #1f2b3f;
 }
 
 /* modal overlay */
@@ -121,7 +126,7 @@ h1 {
   visibility: visible;
 }
 .modal-window {
-  background: #ffffffec;
+  background: #FFFFFF; /* Основной фон */
   backdrop-filter: blur(4px);
   max-width: 480px;
   width: 100%;
@@ -153,7 +158,7 @@ h1 {
   width: 100%;
   padding: 0.9rem 1.2rem;
   font-size: 1.1rem;
-  background: #fcf8f2;
+  background: #FFFFFF; /* Основной фон */
   border: 1.5px solid #e2d5c8;
   border-radius: 30px;
   margin-bottom: 1.8rem;
@@ -161,9 +166,9 @@ h1 {
   outline: none;
 }
 .input-product:focus {
-  border-color: #b39274;
-  background: white;
-  box-shadow: 0 0 0 3px #edd9c9;
+  border-color: #355CBD; /* Акцентный цвет */
+  background: #FFFFFF;
+  box-shadow: 0 0 0 3px #D2DFFF; /* Дополнительный фон для свечения */
 }
 .workshops-header {
   display: flex;
@@ -177,35 +182,35 @@ h1 {
   font-size: 1.1rem;
 }
 .btn-add-workshop {
-  background: #e7d9cc;
+  background: #D2DFFF; /* Дополнительный фон */
   border: none;
   padding: 0.5rem 1.2rem;
   border-radius: 40px;
   font-weight: 600;
   font-size: 0.9rem;
-  color: #4b3727;
+  color: #1f2b3f;
   cursor: pointer;
   transition: 0.15s;
-  border: 1px solid #cfbeac;
+  border: 1px solid #a5b9e6;
 }
 .btn-add-workshop:hover {
-  background: #d8c4b2;
-  color: #2b1f16;
+  background: #b0c4f0;
+  color: #1a1f2b;
 }
 .workshop-tag-list {
-  background: #f4ede6;
+  background: #D2DFFF; /* Дополнительный фон */
   border-radius: 28px;
   padding: 1.2rem 1.2rem;
   min-height: 4.5rem;
   margin-bottom: 2rem;
-  border: 1px solid #dccfc2;
+  border: 1px solid #a5b9e6;
   display: flex;
   flex-wrap: wrap;
   gap: 0.6rem;
   align-items: center;
 }
 .workshop-tag {
-  background: white;
+  background: #FFFFFF; /* Основной фон */
   border-radius: 50px;
   padding: 0.5rem 1.2rem;
   font-size: 1rem;
@@ -213,8 +218,8 @@ h1 {
   display: inline-flex;
   align-items: center;
   gap: 0.7rem;
-  border: 1px solid #d5c0ad;
-  color: #3d2e23;
+  border: 1px solid #a5b9e6;
+  color: #1f2b3f;
 }
 .remove-workshop {
   background: none;
@@ -222,16 +227,16 @@ h1 {
   font-size: 1.3rem;
   line-height: 1;
   cursor: pointer;
-  color: #a7795b;
+  color: #355CBD; /* Акцентный цвет */
   padding: 0 0.2rem;
   transition: 0.1s;
 }
 .remove-workshop:hover {
-  color: #b13e1f;
+  color: #1f3a7a;
   transform: scale(1.2);
 }
 .placeholder-text {
-  color: #9b8b7c;
+  color: #5f6b8f;
   font-style: italic;
   padding: 0.4rem 0 0.4rem 0.8rem;
 }
@@ -241,21 +246,21 @@ h1 {
   margin-top: 1.2rem;
 }
 .btn-primary {
-  background: #9f7e62;
+  background: #355CBD; /* Акцентный цвет */
   border: none;
   padding: 0.9rem 2.6rem;
   border-radius: 50px;
   font-size: 1.2rem;
   font-weight: 500;
   color: white;
-  box-shadow: 0 6px 12px rgba(130, 90, 60, 0.25);
+  box-shadow: 0 6px 12px rgba(53, 92, 189, 0.25);
   cursor: pointer;
   transition: 0.2s;
-  border: 1px solid #a9876b;
+  border: 1px solid #2a4a9e;
 }
 .btn-primary:hover {
-  background: #876a50;
-  box-shadow: 0 10px 18px rgba(100, 70, 40, 0.25);
+  background: #2a4a9e;
+  box-shadow: 0 10px 18px rgba(53, 92, 189, 0.35);
   transform: scale(1.02);
 }
 
@@ -269,10 +274,15 @@ h1 {
   padding: 1rem;
   font-size: 1.1rem;
   border-radius: 40px;
-  border: 1.5px solid #d2c0af;
-  background: #fcf7f1;
+  border: 1.5px solid #a5b9e6;
+  background: #FFFFFF; /* Основной фон */
   margin: 1.2rem 0 2rem 0;
   cursor: pointer;
+}
+.workshop-select:focus {
+  border-color: #355CBD;
+  outline: none;
+  box-shadow: 0 0 0 3px #D2DFFF;
 }
 .inline-buttons {
   display: flex;
@@ -281,19 +291,19 @@ h1 {
 }
 .btn-cancel {
   background: transparent;
-  border: 1px solid #bbaa9b;
+  border: 1px solid #a5b9e6;
   padding: 0.7rem 1.8rem;
   border-radius: 40px;
   font-size: 1rem;
-  color: #5c4d40;
+  color: #2a3a6b;
   font-weight: 500;
   cursor: pointer;
 }
 .btn-cancel:hover {
-  background: #e7ddd2;
+  background: #D2DFFF; /* Дополнительный фон */
 }
 .btn-add {
-  background: #9f7e62;
+  background: #355CBD; /* Акцентный цвет */
   border: none;
   padding: 0.7rem 2rem;
   border-radius: 40px;
@@ -303,5 +313,5 @@ h1 {
   cursor: pointer;
 }
 .btn-add:hover {
-  background: #7d6048;
+  background: #2a4a9e;
 }
