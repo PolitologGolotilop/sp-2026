@@ -46,6 +46,7 @@ async function send_to_server(route, dict, method = "POST"){
         return await parse_data(response)
     }
 
+    console.log(response)
     log_route_error(route, method)
 }
 
@@ -154,8 +155,15 @@ class ProductList{
             left.id = "left"
             left.style = "display:flex; flex-direction:column; justify-content:space-between;height: -webkit-fill-available;"
 
+            let productionTime = 0
+
+            for(const ws of product.workshops){
+                productionTime+=ws.time
+            }
+
+            const roundedTime = Math.round(productionTime)
             const time = document.createElement("span")
-            time.innerText = `${product.production_time} ч.`
+            time.innerText = `${roundedTime!=productionTime ? `≈ ${roundedTime}` : productionTime} ч.`
             time.style.fontSize = "25px"
             time.style.textAlign = "center"
 
@@ -181,19 +189,53 @@ class ProductModal{
         this.overlay = document.getElementById('productModal')
         this.workshopsContainer = document.getElementById('workshopTagsContainer');
         this.addWorkshopBtn = document.getElementById("openAddWorkshopBtn")
+        this.articleInput = document.getElementById("productArticleInput")
+        this.priceInput = document.getElementById("productPriceInput")
+        this.productType = document.getElementById("productTypeSelect")
+        this.materialType = document.getElementById("productMaterialSelect")
         this.initialized = false
     }
 
+    async initAsyncResources(){
+        this.product_types = await get("/product_types")
+        this.material_types = await get("/material_types")
+    }
+
     init(product){
-        console.log(product)
         this.newProduct = product==null
+
+        function set_value_and_action_input(input, text, self){
+            input.oninput = self.newProduct? null : () => {self.checkChanges(self.product)}
+            input.value = text
+        }
+
+        function generate_select_list(select, options, selectedValue, self){
+            select.innerHTML = ""
+            options.forEach(op=>{
+                const option = document.createElement("option")
+                option.value = op.value
+                option.textContent = op.text
+
+                if(selectedValue&&selectedValue==option.value){
+                    option.selected = true
+                }
+
+                select.appendChild(option)
+                select.oninput = self.newProduct? null : () => {self.checkChanges(self.product)}
+            })
+        }
 
         this.product = product
         this.changed = this.newProduct
 
         this.workshops = this.newProduct? [] : product.workshops.slice()
-        this.nameInput.oninput = this.newProduct? null : () => {this.checkChanges(this.product)}
-        this.nameInput.value = this.newProduct? "" : product.name
+        
+        set_value_and_action_input(this.nameInput, this.newProduct? "" : product.name, this)
+        set_value_and_action_input(this.articleInput, this.newProduct? "" : product.article, this)
+        set_value_and_action_input(this.priceInput, this.newProduct? "" : product.min_price, this)
+        
+        generate_select_list(this.productType, this.product_types.map(p=>{return {value:p.id, text:p.type}}), this.newProduct ? null : product.production_type.id, this)
+        generate_select_list(this.materialType, this.material_types.map(p=>{return {value:p.id, text:p.type}}), this.newProduct ? null : product.material_type.id, this)
 
         this.saveBtn.onclick = async () => {await this.claimChanges()}
         this.saveBtn.innerText = this.newProduct? 'Сохранить' : "Ок"
@@ -226,16 +268,16 @@ class ProductModal{
         this.workshops.forEach(ws => {
             const tag = document.createElement('span');
             tag.className = 'workshop-tag';
-            tag.innerText = ws.name
+            tag.innerText = ws.data.name
 
             const removeBtn = document.createElement("span")
             removeBtn.className = "material-symbols-outlined"
             removeBtn.textContent = "delete"
             removeBtn.style = "cursor:pointer"
-            removeBtn.setAttribute("wsId", ws.id)
+            removeBtn.setAttribute("wsId", ws.data.id)
             removeBtn.onclick = (e) => {
                 e.stopPropagation();
-                this.workshops = this.workshops.filter(s=>s.id!=removeBtn.getAttribute("wsId"))
+                this.workshops = this.workshops.filter(s=>s.data.id!=removeBtn.getAttribute("wsId"))
                 this.renderWorkshops()
             }
 
@@ -254,41 +296,67 @@ class ProductModal{
     }
 
     checkChanges(){
+        if(this.newProduct) return true
+
         function haveSameElements(a, b) {
             if (a.length !== b.length) return false;
             
             const sortedA = [...a].sort((a, b) => 
-                a.name.localeCompare(b.name));
+                a.data.name.localeCompare(b.data.name));
             
             const sortedB = [...b].sort((a, b) => 
-                a.name.localeCompare(b.name)
+                a.data.name.localeCompare(b.data.name)
             );
             
             return sortedA.every((value, index) => value.name == sortedB[index].name && value.id==sortedB[index].id && sortedB[index].address==value.address);
         }
 
-        this.changed = this.product.name.trim() != this.nameInput.value.trim() || !haveSameElements(this.product.workshops, this.workshops)
+        const sameName = this.product.name.trim() == this.nameInput.value.trim()
+        const sameArticle = this.product.article.trim() == this.articleInput.value.trim()
+        const samePrice = parseInt(this.product.min_price) == parseInt(this.priceInput.value)
+        const sameType = this.product.production_type.id == this.productType.value
+        const sameMaterialType = this.product.material_type.id == this.materialType.value
 
-        if(!this.changed){
-            this.saveBtn.innerText = "Ок"
+        if(!sameName || !sameArticle || !samePrice || !sameType || !sameMaterialType || !haveSameElements(this.product.workshops, this.workshops)){
+            this.saveBtn.innerText = "Сохранить"
+            this.changed = true
         }
         else{
-            this.saveBtn.innerText = "Сохранить"
+            this.saveBtn.innerText = "Ок"
+            this.changed = false
         }
     }
 
     async claimChanges(){
         if(this.changed){
             const prod_name = this.nameInput.value.trim()
-            const workshops = this.workshops? this.workshops.map(s=>s.id) : []
-            const dict = {"name":prod_name, "workshops_ids":workshops}
+            const workshops = this.workshops? this.workshops.map(s=>{
+                return {"id":s.data.id, time:s.time}
+            }) : []
+            const article = this.articleInput.value.trim()
+            const price = parseInt(this.priceInput.value)
+            const type = parseInt(this.productType.value)
+            const materialType = parseInt(this.materialType.value)
 
-            if(this.newProduct){
-                await send_to_server("/products", dict)
+            let productData = {
+                name:prod_name,
+                workshops:workshops,
+                production_type:type,
+                material_type:materialType,
+                min_price:price,
+                article:article
+            }
+            
+            const dict = {"product":productData}
+
+            if(!this.newProduct){
+                productData["id"] = this.product.id
+                await send_to_server("/products", productData, "PATCH")
             }
             else{
-                await send_to_server("/products", {"id":this.product.id, product: dict}, "PATCH")
+                await send_to_server("/products", productData)
             }
+
             
             this.changed = false
             await ProductListInstance.init()
@@ -336,7 +404,7 @@ class WorkshopsModal{
         this.currentWorkshops = currentWorkshops
 
         const allWorkshops = await this.getWorkshops()
-        this.available = allWorkshops.filter(s=>!this.currentWorkshops.map(c=>c.name).includes(s.name))
+        this.available = allWorkshops.filter(s=>!this.currentWorkshops.map(c=>c.data.id).includes(s.id))
 
         this.initialized = true
     }
@@ -377,7 +445,7 @@ class WorkshopsModal{
 
     save(){
         const selected = this.select.value
-        this.currentWorkshops.push(this.available.find(s=>s.id==selected))
+        this.currentWorkshops.push({data:this.available.find(s=>s.id==selected), time:0})
 
         this.close()
         ProductModalInstance.renderWorkshops()
@@ -390,5 +458,7 @@ async function initProductList() {
     ProductListInstance.render()
 
     ProductModalInstance = new ProductModal()
+    await ProductModalInstance.initAsyncResources()
+
     WorkshopModalInstance = new WorkshopsModal()
 }

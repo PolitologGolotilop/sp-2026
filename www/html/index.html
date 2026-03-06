@@ -29,6 +29,19 @@
         <h2 id="modalTitle">Продукт</h2>
         <label class="field-label">Наименование модели</label>
         <input type="text" class="input-product" id="productNameInput" placeholder="например, Скандинавский стол">
+
+        <label class="field-label">Артикл</label>
+        <input type="text" class="input-product" id="productArticleInput" placeholder="12345678">
+
+        <label class="field-label">Минимальная стоимость для партнера</label>
+        <input type="number" class="input-product" id="productPriceInput" placeholder="Введите стоимость...">
+
+        <label class="field-label">Тип продукции</label>
+        <select id="productTypeSelect" class="workshop-select"></select>
+
+        <label class="field-label">Основной материал</label>
+        <select id="productMaterialSelect" class="workshop-select"></select>
+
         <div class="workshops-header">
             <span>Цеха производства</span>
             <button class="btn-add-workshop" id="openAddWorkshopBtn">+ добавить цех</button>
