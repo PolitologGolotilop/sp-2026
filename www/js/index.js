@@ -133,6 +133,11 @@ class ProductList{
 
             deleteBtn.onclick = async (e) => {
                 e.stopPropagation();
+
+                if(!confirm("Вы уверены, что хотите удалить продукт? Отменить это действие будет невозможно")){
+                    return
+                }
+
                 const id = parseInt(deleteBtn.getAttribute('productId'));
                 
                 const response = await fetch(`/products/${id}`, {
@@ -205,7 +210,7 @@ class ProductModal{
         this.newProduct = product==null
 
         function set_value_and_action_input(input, text, self){
-            input.oninput = self.newProduct? null : () => {self.checkChanges(self.product)}
+            input.oninput = self.newProduct? ()=>{self.validate()} : () => {self.checkChanges(self.product)}
             input.value = text
         }
 
@@ -232,12 +237,11 @@ class ProductModal{
         
         set_value_and_action_input(this.nameInput, this.newProduct? "" : product.name, this)
         set_value_and_action_input(this.articleInput, this.newProduct? "" : product.article, this)
-        set_value_and_action_input(this.priceInput, this.newProduct? "" : product.min_price, this)
+        set_value_and_action_input(this.priceInput, this.newProduct? "0" : product.min_price, this)
         
         generate_select_list(this.productType, this.product_types.map(p=>{return {value:p.id, text:p.type}}), this.newProduct ? null : product.production_type.id, this)
         generate_select_list(this.materialType, this.material_types.map(p=>{return {value:p.id, text:p.type}}), this.newProduct ? null : product.material_type.id, this)
 
-        this.saveBtn.onclick = async () => {await this.claimChanges()}
         this.saveBtn.innerText = this.newProduct? 'Сохранить' : "Ок"
 
         this.overlay.onclick = (e) => {
@@ -254,6 +258,7 @@ class ProductModal{
         this.initialized = true
 
         this.renderWorkshops()
+        this.validate()
     }
 
     renderWorkshops(){
@@ -295,6 +300,45 @@ class ProductModal{
         this.overlay.classList.add("active")
     }
 
+    validate(){
+        const isName = this.validateEmptiness(this.nameInput, this.nameInput.labels[0])
+        const isArticle = this.validateEmptiness(this.articleInput, this.articleInput.labels[0])
+        const isPrice = this.validateEmptiness(this.priceInput, this.priceInput.labels[0])
+        const pricePositive = this.validateNumberPositiveness(this.priceInput, this.priceInput.labels[1])
+
+        if(isName&&isPrice&&isArticle&&pricePositive){
+            this.saveBtn.classList.add("active")
+            this.saveBtn.onclick = async () => {await this.claimChanges()}
+        }
+        else{
+            this.saveBtn.classList.remove("active")
+            this.saveBtn.onclick = null
+        }
+    }
+
+    validateEmptiness(input, errorLabel){
+        if(!input.value||input.value.trim().length==0){
+            errorLabel.style.display = "block"
+            return false
+        }
+        else{
+            errorLabel.style.display = "none"
+            return true
+        }
+    }
+
+    validateNumberPositiveness(input, errorLabel){
+        console.log(parseInt(input.value))
+        if(parseInt(input.value)<0){
+            errorLabel.style.display = "block"
+            return false
+        }
+        else{
+            errorLabel.style.display = "none"
+            return true
+        }
+    }
+
     checkChanges(){
         if(this.newProduct) return true
 
@@ -320,6 +364,8 @@ class ProductModal{
         if(!sameName || !sameArticle || !samePrice || !sameType || !sameMaterialType || !haveSameElements(this.product.workshops, this.workshops)){
             this.saveBtn.innerText = "Сохранить"
             this.changed = true
+
+            this.validate()
         }
         else{
             this.saveBtn.innerText = "Ок"

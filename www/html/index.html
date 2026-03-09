@@ -29,12 +29,16 @@
         <h2 id="modalTitle">Продукт</h2>
         <label class="field-label">Наименование модели</label>
         <input type="text" class="input-product" id="productNameInput" placeholder="например, Скандинавский стол">
+        <label type="text" for="productNameInput" class="error-label">Обязательное поле для заполнения</label>
 
         <label class="field-label">Артикл</label>
         <input type="text" class="input-product" id="productArticleInput" placeholder="12345678">
+        <label type="text" for="productArticleInput" class="error-label">Обязательное поле для заполнения</label>
 
         <label class="field-label">Минимальная стоимость для партнера</label>
-        <input type="number" class="input-product" id="productPriceInput" placeholder="Введите стоимость...">
+        <input type="number" min="0" class="input-product" id="productPriceInput" placeholder="Введите стоимость...">
+        <label type="text" for="productPriceInput" class="error-label">Обязательное поле для заполнения</label>
+        <label type="text" for="productPriceInput" class="error-label">Стоимость не может быть отрицательной</label>
 
         <label class="field-label">Тип продукции</label>
         <select id="productTypeSelect" class="workshop-select"></select>

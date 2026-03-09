@@ -249,7 +249,7 @@ h1 {
   margin-top: 1.2rem;
 }
 .btn-primary {
-  background: #355CBD; /* Акцентный цвет */
+  background: #818181;
   border: none;
   padding: 0.9rem 2.6rem;
   border-radius: 50px;
@@ -259,9 +259,19 @@ h1 {
   box-shadow: 0 6px 12px rgba(53, 92, 189, 0.25);
   cursor: pointer;
   transition: 0.2s;
+}
+
+.error-label{
+  color:red;
+  display: none;
+}
+
+.btn-primary.active{
+  background: #355CBD;
   border: 1px solid #2a4a9e;
 }
-.btn-primary:hover {
+
+.btn-primary.active:hover {
   background: #2a4a9e;
   box-shadow: 0 10px 18px rgba(53, 92, 189, 0.35);
   transform: scale(1.02);
