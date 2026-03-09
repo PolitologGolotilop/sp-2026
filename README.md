@@ -10,7 +10,8 @@
 
 ---
 
-<img width="1917" height="952" alt="image" src="https://github.com/user-attachments/assets/3fd96626-c63a-4da7-9c6c-116f74458a17" />
+<img width="1917" height="950" alt="image" src="https://github.com/user-attachments/assets/62c69dd5-7b72-4530-bc3c-6223f4890aa4" />
+
 
 
 Модальное окно для просмотра и редактирования информации о продукте
