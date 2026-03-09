@@ -66,10 +66,22 @@
         <label class="field-label">Выберите из списка</label>
         <select id="workshopSelect" class="workshop-select">
         </select>
+        <input type="number" class="input-product" min = "0" id = "wsTimeInput" placeholder="Время нахождения продукции в цехе (часов)">
         <div class="inline-buttons">
             <button class="btn-cancel" id="cancelWorkshopBtn">отмена</button>
             <button class="btn-add" id="addWorkshopConfirmBtn">добавить</button>
         </div>
+    </div>
+</div>
+
+<!-- модальное окно для расчета количества сырья -->
+<div class="modal-overlay" id="calcModal">
+    <div class="modal-window small-modal">
+        <label class="field-label">Расчет количества сырья</label>
+        <label id="calcParams"></label>
+        <input class="input-product" type="number" min="1" id="calcCountInput" placeholder="Количество продукции для расчета">
+        <p id="calcResult"></p>
+        <button id = "calcButton" class="btn-primary active">Рассчитать</button>
     </div>
 </div>
 </body>

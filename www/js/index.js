@@ -1,6 +1,7 @@
 let ProductListInstance = null
 let ProductModalInstance = null
 let WorkshopModalInstance = null
+let CalcModalInstance = null
 
 async function fetch_with_body(route, method, dict){
     const response = await fetch(route, 
@@ -153,7 +154,21 @@ class ProductList{
                 }
             }
 
+            const calcBtn = document.createElement("span")
+            calcBtn.className = "material-symbols-outlined"
+            calcBtn.textContent = "developer_board"
+            calcBtn.setAttribute("productId", product.id)
+            calcBtn.onclick = (e) => {
+                e.stopPropagation();
+                const id = calcBtn.getAttribute('productId');
+                const product = this.products.find(p => p.id == id);
+
+                CalcModalInstance.init(product.production_type, product.material_type)
+                CalcModalInstance.open()
+            }
+
             btnsDiv.appendChild(viewBtn)
+            btnsDiv.append(calcBtn)
             btnsDiv.append(deleteBtn)
 
             const left = document.createElement("div")
@@ -286,7 +301,16 @@ class ProductModal{
                 this.renderWorkshops()
             }
 
+            const stuffCount = document.createElement("span")
+            stuffCount.textContent = `Работников: ${ws.data.stuff_count}`
+
+            const time = document.createElement("span")
+            time.textContent = `Время в цехе: ${ws.time} ч.`
+            
             tag.appendChild(removeBtn)
+            tag.appendChild(stuffCount)
+            tag.appendChild(time)
+
             this.workshopsContainer.appendChild(tag);
         });
     }
@@ -352,7 +376,7 @@ class ProductModal{
                 a.data.name.localeCompare(b.data.name)
             );
             
-            return sortedA.every((value, index) => value.name == sortedB[index].name && value.id==sortedB[index].id && sortedB[index].address==value.address);
+            return sortedA.every((value, index) => value.data.name == sortedB[index].data.name && value.id==sortedB[index].id && value.time == sortedB[index].time);
         }
 
         const sameName = this.product.name.trim() == this.nameInput.value.trim()
@@ -435,6 +459,7 @@ class WorkshopsModal{
         this.initialized = false
         this.cancelBtn = document.getElementById("cancelWorkshopBtn")
         this.saveBtn = document.getElementById("addWorkshopConfirmBtn")
+        this.timeInput = document.getElementById("wsTimeInput")
 
         this.overlay.onclick = (e) => {
             if(e.target==this.overlay){
@@ -491,10 +516,47 @@ class WorkshopsModal{
 
     save(){
         const selected = this.select.value
-        this.currentWorkshops.push({data:this.available.find(s=>s.id==selected), time:0})
+        this.currentWorkshops.push({data:this.available.find(s=>s.id==selected), time:parseFloat(this.timeInput.value)})
 
         this.close()
         ProductModalInstance.renderWorkshops()
+    }
+}
+
+class CalcModal{
+    constructor(){
+        this.paramsLabel = document.getElementById("calcParams")
+        this.button = document.getElementById("calcButton")
+        this.resultField = document.getElementById("calcResult")
+        this.countInput = document.getElementById("calcCountInput")
+        this.overlay = document.getElementById("calcModal")
+
+        this.overlay.onclick = (e) => {if(e.target==this.overlay){this.close()}}
+    }
+
+    init(productType, materialType){
+        this.countInput.value = "1"
+        this.resultField.textContent = "Итого необходимо сырья:"
+
+        this.paramsLabel.innerHTML = `Тип продукции: ${productType.type}. Коэффициент: ${productType.ratio}<br><br>Тип материала: ${materialType.type}. Процент потерь: ${materialType.loss_persent}`
+        this.button.onclick = () => {this.calculate(productType.ratio, materialType.loss_persent)}
+    }
+
+    calculate(productRatio, loss){
+        const count = parseInt(this.countInput.value)
+        const materialCount = count*productRatio
+        const materialLoss = materialCount*loss
+        const totalMaterial = materialCount+materialLoss
+
+        this.resultField.textContent = `Итого необходимо сырья: ${totalMaterial}`
+    }
+
+    open(){
+        this.overlay.classList.add("active")
+    }
+
+    close(){
+        this.overlay.classList.remove("active")
     }
 }
 
@@ -507,4 +569,5 @@ async function initProductList() {
     await ProductModalInstance.initAsyncResources()
 
     WorkshopModalInstance = new WorkshopsModal()
+    CalcModalInstance = new CalcModal()
 }
